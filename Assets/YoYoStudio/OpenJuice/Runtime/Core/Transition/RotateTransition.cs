@@ -1,4 +1,5 @@
 // Copyright (c) 2020 Omid Saadat (@omid3098)
+
 using DG.Tweening;
 using UnityEngine;
 
@@ -14,15 +15,17 @@ namespace YoYoStudio.OpenJuice
             set
             {
                 targetRotation = value;
-                if (tween != null) tween.ChangeEndValue(targetRotation);
+                if (tween != null) ((Tweener) tween).ChangeEndValue(targetRotation);
             }
         }
 
         protected override void MakeTweens()
         {
             tween = transform.DOLocalRotate(TargetRotation, Duration).SetEase(EaseType).SetLoops(Loop, LoopType).SetDelay(Delay).SetAutoKill(false);
-            if (TransitionType == TransitionType.From) tween.From(Relative);
-            else tween.SetRelative(Relative);
+            if (TransitionType == TransitionType.From)
+                ((Tweener) tween).From(Relative);
+            else
+                tween.SetRelative(Relative);
             tween.Pause();
         }
     }

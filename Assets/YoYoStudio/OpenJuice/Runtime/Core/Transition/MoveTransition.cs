@@ -1,5 +1,7 @@
 // Copyright (c) 2020 Omid Saadat (@omid3098)
 using DG.Tweening;
+using DG.Tweening.Core;
+using DG.Tweening.Plugins.Options;
 using UnityEngine;
 namespace YoYoStudio.OpenJuice
 {
@@ -19,26 +21,35 @@ namespace YoYoStudio.OpenJuice
         protected override void MakeTweens()
         {
             Vector3 originalPosition = LocalSpace ? transform.localPosition : transform.position;
-            
-            tween = LocalSpace ? transform.DOLocalMove(targetPosition, Duration) : transform.DOMove(targetPosition, Duration);
-            
-            tween.SetEase(EaseType).SetLoops(Loop, LoopType).SetDelay(Delay).SetAutoKill(false);
-            
-            if (TransitionType == TransitionType.From) 
-                tween.From(Relative);
-            else
-                tween.SetRelative(Relative);
-            tween.Pause();
+
+            {
+                var forward = LocalSpace
+                    ? transform.DOLocalMove(targetPosition, Duration)
+                    : transform.DOMove(targetPosition, Duration);
+                forward.SetEase(EaseType).SetLoops(Loop, LoopType).SetDelay(Delay).SetAutoKill(false);
+
+                if (TransitionType == TransitionType.From)
+                    forward.From(Relative);
+                else
+                    forward.SetRelative(Relative);
+
+                tween = forward;
+                tween.Pause();
+            }
 
 
-            Vector3 rewindPosition = Relative ? targetPosition * -1 : originalPosition;
-            rewindTween = LocalSpace ? transform.DOLocalMove(rewindPosition, RewindDuration) : transform.DOMove(rewindPosition, RewindDuration);
-            rewindTween.SetEase(EaseType).SetLoops(Loop, LoopType).SetDelay(RewindDelay).SetAutoKill(false);
-            if (TransitionType == TransitionType.From) 
-                rewindTween.From(Relative);
-            else
-                rewindTween.SetRelative(Relative);
-            rewindTween.Pause();
+            {
+                Vector3 rewindPosition = Relative ? targetPosition * -1 : originalPosition;
+                var backward = LocalSpace ? transform.DOLocalMove(rewindPosition, RewindDuration) : transform.DOMove(rewindPosition, RewindDuration);
+                backward.SetEase(EaseType).SetLoops(Loop, LoopType).SetDelay(RewindDelay).SetAutoKill(false);
+                if (TransitionType == TransitionType.From)
+                    backward.From(Relative);
+                else
+                    backward.SetRelative(Relative);
+                
+                rewindTween = backward;
+                rewindTween.Pause();
+            }
         }
     }
 }

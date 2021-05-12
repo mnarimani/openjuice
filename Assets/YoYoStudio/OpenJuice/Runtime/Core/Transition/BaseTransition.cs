@@ -28,7 +28,7 @@ namespace YoYoStudio.OpenJuice
         [SerializeField] private bool relative = true;
         [SerializeField] private bool localSpace = false;
 
-        protected Tweener tween, rewindTween;
+        protected Tween tween, rewindTween;
 
         public float Duration { get => duration; set => duration = value; }
         public float RewindDuration { get => rewindDuration; set => rewindDuration = value; }
