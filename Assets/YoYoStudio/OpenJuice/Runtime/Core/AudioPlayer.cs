@@ -1,7 +1,9 @@
 // Copyright (c) 2020 Omid Saadat (@omid3098)
+#if !AUDOTY
 using System;
 using UnityEngine;
 using Cysharp.Threading.Tasks;
+
 namespace YoYoStudio.OpenJuice
 {
     public class AudioPlayer
@@ -67,3 +69,4 @@ namespace YoYoStudio.OpenJuice
         }
     }
 }
+#endif

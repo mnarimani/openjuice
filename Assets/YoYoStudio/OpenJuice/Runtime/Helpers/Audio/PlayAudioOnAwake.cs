@@ -1,4 +1,5 @@
 // Copyright (c) 2020 Omid Saadat (@omid3098)
+#if !AUDOTY
 using UnityEngine;
 
 namespace YoYoStudio.OpenJuice
@@ -14,3 +15,4 @@ namespace YoYoStudio.OpenJuice
         private void OnDisable() { if (stopOnDisable) Juicer.Instance.StopSFX(clip); }
     }
 }
+#endif

@@ -12,7 +12,8 @@
         "CharTweener",
         "UIEffect",
         "NaughtyAttributes.Core",
-        "DOTween.Modules"
+        "DOTween.Modules",
+        "Audoty"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],
@@ -31,6 +32,11 @@
             "name": "com.coffee.ui-effect",
             "expression": "",
             "define": "UI_EFFECT"
+        },
+        {
+            "name": "com.mnarimani.audoty",
+            "expression": "",
+            "define": "AUDOTY"
         }
     ],
     "noEngineReferences": false

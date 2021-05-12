@@ -24,6 +24,11 @@
             "name": "com.coffee.ui-effect",
             "expression": "",
             "define": "UI_EFFECT"
+        },
+        {
+            "name": "com.mnarimani.audoty",
+            "expression": "",
+            "define": "AUDOTY"
         }
     ],
     "noEngineReferences": false

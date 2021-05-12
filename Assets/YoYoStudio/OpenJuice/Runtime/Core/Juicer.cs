@@ -15,8 +15,10 @@ namespace YoYoStudio.OpenJuice
     {
         private Dictionary<string, ObjectPool<Effect>> effectsPool;
         private List<Effect> effectPrefabs;
+#if !AUDOTY
         private AudioPlayer sfxAudioPlayer;
         private AudioPlayer musicAudioPlayer;
+#endif
 
 #if UI_EFFECT
         private TransitionEffect transitionEffect;
@@ -49,8 +51,10 @@ namespace YoYoStudio.OpenJuice
             effectPrefabs = new List<Effect>();
             LoadAllEffectPrefabs();
             CreateObjectPoolForEachEffect();
+#if !AUDOTY
             sfxAudioPlayer = new AudioPlayer(transform, "sfx");
             musicAudioPlayer = new AudioPlayer(transform, "music");
+#endif
         }
 
         private void CreateObjectPoolForEachEffect()
@@ -118,6 +122,7 @@ namespace YoYoStudio.OpenJuice
             }
         }
 
+#if !AUDOTY
         public AudioSource PlaySfx(AudioClip clip, bool loop = false) => sfxAudioPlayer.Play(clip, loop);
         public AudioSource PlaySfx(AudioClip clip, Action onComplete) => sfxAudioPlayer.Play(clip, onComplete);
         public AudioSource PlayMusic(AudioClip clip, bool loop = true) => musicAudioPlayer.Play(clip, loop);
@@ -126,5 +131,6 @@ namespace YoYoStudio.OpenJuice
         public void StopSFX(AudioSource audioSource) => sfxAudioPlayer.ReleaseSource(audioSource);
         public void StopMusic(AudioClip clip) => musicAudioPlayer.ReleaseSource(clip);
         public void StopMusic(AudioSource audioSource) => musicAudioPlayer.ReleaseSource(audioSource);
+#endif
     }
 }

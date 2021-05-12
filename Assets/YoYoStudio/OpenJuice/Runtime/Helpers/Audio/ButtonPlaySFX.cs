@@ -1,4 +1,5 @@
 ﻿// Copyright (c) 2020 Omid Saadat (@omid3098)
+#if !AUDOTY
 using UnityEngine;
 
 namespace YoYoStudio.OpenJuice
@@ -9,3 +10,4 @@ namespace YoYoStudio.OpenJuice
         protected override void OnPressed() => Juicer.Instance.PlaySfx(clip);
     }
 }
+#endif

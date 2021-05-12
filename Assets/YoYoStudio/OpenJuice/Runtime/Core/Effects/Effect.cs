@@ -3,21 +3,41 @@ using System;
 using Cysharp.Threading.Tasks;
 using UnityEngine;
 
+#if AUDOTY
+using Audoty;
+#endif
+
 namespace YoYoStudio.OpenJuice
 {
     public class Effect : MonoBehaviour
     {
         public virtual string Id => gameObject.name;
-        [SerializeField] AudioClip startClip = null;
-        [SerializeField] AudioClip loopClip = null;
-        [SerializeField] AudioClip endClip = null;
+#if AUDOTY
+        [SerializeField] AudioPlayer startClip, loopClip, endClip;
+#else
+        [SerializeField] AudioClip startClip, loopClip, endClip = null;
+#endif
+        
         [SerializeField] float duration = 0f;
+        
+#if AUDOTY
+        private AudioHandle loopHandle;
+#else
         private AudioSource loopSource;
+#endif
         private bool effectStarted;
 
         public virtual void PlayStartEffect()
         {
-            if (startClip != null) Juicer.Instance.PlaySfx(startClip, PlayLoopEffect);
+            if (startClip != null)
+            {
+#if AUDOTY
+                startClip.Play();
+#else
+                Juicer.Instance.PlaySfx(startClip, PlayLoopEffect);
+#endif
+            }
+            
             effectStarted = true;
             if (duration > 0)
             {
@@ -31,8 +51,30 @@ namespace YoYoStudio.OpenJuice
             Juicer.Instance.ReleaseEffect(this);
         }
 
-        public virtual void PlayLoopEffect() { if (loopClip != null) loopSource = Juicer.Instance.PlaySfx(loopClip, true); }
-        public virtual void PlayEndEffect() { if (endClip != null) Juicer.Instance.PlaySfx(endClip); }
+        public virtual void PlayLoopEffect()
+        {
+            if (loopClip != null)
+            {
+#if AUDOTY
+                loopHandle = loopClip.Play();
+#else
+                loopSource = Juicer.Instance.PlaySfx(loopClip, true);
+#endif
+            }
+        }
+
+        public virtual void PlayEndEffect()
+        {
+            if (endClip != null)
+            {
+#if AUDOTY
+                endClip.Play();
+#else
+                Juicer.Instance.PlaySfx(endClip);
+#endif
+            }
+        }
+        
         private void OnDisable()
         {
             StopEffectSFX();
@@ -40,11 +82,17 @@ namespace YoYoStudio.OpenJuice
 
         private void StopEffectSFX()
         {
-            if (effectStarted == true)
+            if (effectStarted)
             {
-                if (loopSource != null) Juicer.Instance.StopSFX(loopSource);
+#if AUDOTY
+                loopHandle.Stop();
+#else
+                if (loopSource != null) 
+                    Juicer.Instance.StopSFX(loopSource);
+#endif
                 PlayEndEffect();
             }
+            
             effectStarted = false;
         }
     }
