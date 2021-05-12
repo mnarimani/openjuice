@@ -18,12 +18,12 @@ namespace YoYoStudio.OpenJuice
             }
         }
 
-        protected override Tweener MakeTweener()
+        protected override void MakeTweens()
         {
             tween = transform.DOScale(TargetScale, Duration).SetEase(EaseType).SetLoops(Loop, LoopType).SetDelay(Delay).SetAutoKill(false);
             if (TransitionType == TransitionType.From) tween.From(Relative);
             else tween.SetRelative(Relative);
-            return tween;
+            tween.Pause();
         }
     }
 }

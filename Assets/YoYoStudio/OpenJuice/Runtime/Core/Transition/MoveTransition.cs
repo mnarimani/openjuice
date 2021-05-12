@@ -12,13 +12,15 @@ namespace YoYoStudio.OpenJuice
             get => targetPosition; set
             {
                 targetPosition = value;
-                MakeTweener();
+                MakeTweens();
             }
         }
 
-        protected override Tweener MakeTweener()
+        protected override void MakeTweens()
         {
-            tween = LocalSpace == false ? transform.DOMove(targetPosition, Duration) : transform.DOLocalMove(targetPosition, Duration);
+            Vector3 originalPosition = LocalSpace ? transform.localPosition : transform.position;
+            
+            tween = LocalSpace ? transform.DOLocalMove(targetPosition, Duration) : transform.DOMove(targetPosition, Duration);
             
             tween.SetEase(EaseType).SetLoops(Loop, LoopType).SetDelay(Delay).SetAutoKill(false);
             
@@ -26,8 +28,17 @@ namespace YoYoStudio.OpenJuice
                 tween.From(Relative);
             else
                 tween.SetRelative(Relative);
-            
-            return tween;
+            tween.Pause();
+
+
+            Vector3 rewindPosition = Relative ? targetPosition * -1 : originalPosition;
+            rewindTween = LocalSpace ? transform.DOLocalMove(rewindPosition, RewindDuration) : transform.DOMove(rewindPosition, RewindDuration);
+            rewindTween.SetEase(EaseType).SetLoops(Loop, LoopType).SetDelay(RewindDelay).SetAutoKill(false);
+            if (TransitionType == TransitionType.From) 
+                rewindTween.From(Relative);
+            else
+                rewindTween.SetRelative(Relative);
+            rewindTween.Pause();
         }
     }
 }

@@ -11,7 +11,8 @@
         "Unity.TextMeshPro.Editor",
         "CharTweener",
         "UIEffect",
-        "NaughtyAttributes.Core"
+        "NaughtyAttributes.Core",
+        "DOTween.Modules"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

@@ -1,15 +1,13 @@
 // Copyright (c) 2020 Omid Saadat (@omid3098)
+
 using DG.Tweening;
 using UnityEngine;
-
 #if UNITASK_DOTWEEN_SUPPORT
 using Cysharp.Threading.Tasks;
-
 #endif
-
-
 #if ODIN_INSPECTOR
 using Sirenix.OdinInspector;
+
 #elif NAUGHTY_ATTRIBUTES
 using NaughtyAttributes;
 #endif
@@ -19,20 +17,23 @@ namespace YoYoStudio.OpenJuice
     public abstract class BaseTransition : MonoBehaviour
     {
         [SerializeField] private float duration = 0.4f;
+        [SerializeField] private float rewindDuration = 0.4f;
         [SerializeField] private bool playOnEnable = true;
         [SerializeField] private float delay = 0;
+        [SerializeField] private float rewindDelay = 0;
         [SerializeField] private Ease easeType = Ease.OutQuart;
         [SerializeField] private TransitionType transitionType = TransitionType.To;
-        [Tooltip("-1 for infinite loop")] [SerializeField] private int loop = 1;
+        [Tooltip("-1 for infinite loop"), SerializeField] private int loop = 1;
         [SerializeField] private LoopType loopType = LoopType.Yoyo;
         [SerializeField] private bool relative = true;
-        [SerializeField] private bool killPlayingTween = true;
         [SerializeField] private bool localSpace = false;
-        
-        protected Tweener tween;
+
+        protected Tweener tween, rewindTween;
 
         public float Duration { get => duration; set => duration = value; }
+        public float RewindDuration { get => rewindDuration; set => rewindDuration = value; }
         public float Delay { get => delay; set => delay = value; }
+        public float RewindDelay { get => rewindDelay; set => rewindDelay = value; }
         public Ease EaseType { get => easeType; set => easeType = value; }
         public TransitionType TransitionType { get => transitionType; set => transitionType = value; }
         public int Loop { get => loop; set => loop = value; }
@@ -40,7 +41,6 @@ namespace YoYoStudio.OpenJuice
         public bool Relative { get => relative; set => relative = value; }
         public bool LocalSpace { get => localSpace; set => localSpace = value; }
         public bool PlayOnEnable { get => playOnEnable; set => playOnEnable = value; }
-        public bool KillPlayingTween { get => killPlayingTween; set => killPlayingTween = value; }
 
         private void OnEnable()
         {
@@ -58,16 +58,13 @@ namespace YoYoStudio.OpenJuice
 #endif
         public void Play()
         {
+            if (rewindTween != null && rewindTween.IsPlaying())
+                rewindTween.Pause();
+
             if (tween != null)
             {
-                if (KillPlayingTween && tween.IsPlaying())
-                {
-                    tween.Kill(true);
-                }
-                else
-                {
+                if (tween.IsPlaying())
                     return;
-                }
 
                 // We don't want to cache tween in editor to enable editing parameters while in play mode.
 #if !UNITY_EDITOR
@@ -75,29 +72,34 @@ namespace YoYoStudio.OpenJuice
                 return;
 #endif
             }
-            tween = MakeTweener();
+
+            MakeTweens();
+            tween.Play();
         }
-        
+
 #if ODIN_INSPECTOR || NAUGHTY_ATTRIBUTES
         [Button("Play Reverse")]
 #endif
         public void PlayReverse()
         {
-            if (tween != null)
+            if (tween != null && tween.IsPlaying())
+                tween.Pause();
+            
+            if (rewindTween != null)
             {
-                if (KillPlayingTween && tween.IsPlaying())
-                {
-                    tween.Kill(true);
-                }
-                else
-                {
+                if (rewindTween.IsPlaying())
                     return;
-                }
-                
-                tween.SmoothRewind();
+
+#if !UNITY_EDITOR
+                rewindTween.Restart();
+                return;
+#endif
             }
+            
+            MakeTweens();
+            rewindTween.Play();
         }
-        
+
 #if UNITASK_DOTWEEN_SUPPORT
         public UniTask PlayAsync()
         {
@@ -108,10 +110,10 @@ namespace YoYoStudio.OpenJuice
         public UniTask PlayReverseAsync()
         {
             PlayReverse();
-            return tween.AwaitForRewind();
+            return rewindTween.AwaitForComplete();
         }
 #endif
 
-        protected abstract Tweener MakeTweener();
+        protected abstract void MakeTweens();
     }
 }
