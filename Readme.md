@@ -89,7 +89,7 @@ Jucer.PlaySfx(audioclip, Action onComplete);
 Jucer.PlayMusic(audioclip, loop = true);
 Jucer.PlayMusic(audioclip, Action onComplete);
 ```
-
+**NOTE: OpenJuice's AudioPlayer will be disabled if you add [Audoty](https://github.com/mnarimani/Audoty) to your project.**
 ## Transitions
 
 ![Transitions](https://git.cafebazaar.ir/cafebazi-studio/openjuice/uploads/b7435cdcc8a83a66e7c338b9442a761a/Transitions.gif)
