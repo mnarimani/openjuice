@@ -26,6 +26,9 @@ namespace YoYoStudio.OpenJuice
         [Tooltip("-1 for infinite loop")] [SerializeField] private int loop = 1;
         [SerializeField] private LoopType loopType = LoopType.Yoyo;
         [SerializeField] private bool relative = true;
+        [SerializeField] private bool killPlayingTween = true;
+        [SerializeField] private bool localSpace = false;
+        
         protected Tweener tween;
 
         public float Duration { get => duration; set => duration = value; }
@@ -35,7 +38,9 @@ namespace YoYoStudio.OpenJuice
         public int Loop { get => loop; set => loop = value; }
         public LoopType LoopType { get => loopType; set => loopType = value; }
         public bool Relative { get => relative; set => relative = value; }
+        public bool LocalSpace { get => localSpace; set => localSpace = value; }
         public bool PlayOnEnable { get => playOnEnable; set => playOnEnable = value; }
+        public bool KillPlayingTween { get => killPlayingTween; set => killPlayingTween = value; }
 
         private void OnEnable()
         {
@@ -55,8 +60,14 @@ namespace YoYoStudio.OpenJuice
         {
             if (tween != null)
             {
-                if (tween.IsPlaying())
+                if (KillPlayingTween && tween.IsPlaying())
+                {
+                    tween.Kill(true);
+                }
+                else
+                {
                     return;
+                }
 
                 // We don't want to cache tween in editor to enable editing parameters while in play mode.
 #if !UNITY_EDITOR
@@ -73,7 +84,18 @@ namespace YoYoStudio.OpenJuice
         public void PlayReverse()
         {
             if (tween != null)
+            {
+                if (KillPlayingTween && tween.IsPlaying())
+                {
+                    tween.Kill(true);
+                }
+                else
+                {
+                    return;
+                }
+                
                 tween.SmoothRewind();
+            }
         }
         
 #if UNITASK_DOTWEEN_SUPPORT

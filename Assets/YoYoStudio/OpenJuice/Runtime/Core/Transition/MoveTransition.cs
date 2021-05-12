@@ -18,9 +18,15 @@ namespace YoYoStudio.OpenJuice
 
         protected override Tweener MakeTweener()
         {
-            tween = transform.DOMove(TargetPosition, Duration).SetEase(EaseType).SetLoops(Loop, LoopType).SetDelay(Delay).SetAutoKill(false);
-            if (TransitionType == TransitionType.From) tween.From(Relative);
-            else tween.SetRelative(Relative);
+            tween = LocalSpace == false ? transform.DOMove(targetPosition, Duration) : transform.DOLocalMove(targetPosition, Duration);
+            
+            tween.SetEase(EaseType).SetLoops(Loop, LoopType).SetDelay(Delay).SetAutoKill(false);
+            
+            if (TransitionType == TransitionType.From) 
+                tween.From(Relative);
+            else
+                tween.SetRelative(Relative);
+            
             return tween;
         }
     }
