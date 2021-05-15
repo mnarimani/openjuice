@@ -59,29 +59,39 @@ namespace YoYoStudio.OpenJuice
 
         private void CreateObjectPoolForEachEffect()
         {
-            for (int i = 0; i < effectPrefabs.Count; i++)
+            foreach (Effect prefab in effectPrefabs)
             {
-                var effectPrefab = effectPrefabs[i];
-                ObjectPool<Effect> effectPool = new ObjectPool<Effect>(1, () =>
-                                                    {
-                                                        var effect = Instantiate(effectPrefab);
-                                                        effect.name = effectPrefab.name;
-                                                        effect.transform.SetParent(transform, false);
-                                                        effect.gameObject.SetActive(false);
-                                                        return effect;
-                                                    }, (effect) => { effect.gameObject.SetActive(true); }
-                                                    , (effect) => { effect.gameObject.SetActive(false); });
+                if (effectsPool.ContainsKey(prefab.Id))
+                {
+                    Debug.LogError($"[Juicer] Duplicate effects with id {prefab.Id}");
+                    continue;
+                }
+                
+                var effectPool = new ObjectPool<Effect>(1, () =>
+                    {
+                        var effect = Instantiate(prefab);
+                        effect.name = prefab.name;
+                        effect.transform.SetParent(transform, false);
+                        effect.gameObject.SetActive(false);
+                        return effect;
+                    }, (effect) => { effect.gameObject.SetActive(true); }
+                    , (effect) => { effect.gameObject.SetActive(false); });
                 effectPool.WarmUp(1);
-                effectsPool.Add(effectPrefab.Id, effectPool);
+
+                    effectsPool.Add(prefab.Id, effectPool);
             }
         }
+
         private void LoadAllEffectPrefabs()
         {
-            EffectDatabase effectDatabase = Resources.Load<EffectDatabase>("EffectDatabase");
-            for (int i = 0; i < effectDatabase.effectLists.Count; i++)
+            var databases = Resources.LoadAll<EffectDatabase>("");
+            foreach (EffectDatabase effectDatabase in databases)
             {
-                EffectPack item = effectDatabase.effectLists[i];
-                if (item != null && item.effects != null) effectPrefabs.AddRange(item.effects);
+                for (int i = 0; i < effectDatabase.effectLists.Count; i++)
+                {
+                    EffectPack item = effectDatabase.effectLists[i];
+                    if (item != null && item.effects != null) effectPrefabs.AddRange(item.effects);
+                }
             }
         }
 
