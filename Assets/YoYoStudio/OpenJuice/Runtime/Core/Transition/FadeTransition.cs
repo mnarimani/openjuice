@@ -8,13 +8,11 @@ namespace YoYoStudio.OpenJuice
     {
         private CanvasGroup canvasGroup;
 
-        private void Awake()
-        {
-            canvasGroup = GetComponent<CanvasGroup>();
-        }
-
         protected override void MakeTweens()
         {
+            if (canvasGroup == null)
+                canvasGroup = GetComponent<CanvasGroup>();
+
             {
                 Sequence seq = DOTween.Sequence();
                 seq.AppendCallback(() => canvasGroup.alpha = 0);
