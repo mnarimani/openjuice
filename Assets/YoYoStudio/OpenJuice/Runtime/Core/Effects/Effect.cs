@@ -32,7 +32,8 @@ namespace YoYoStudio.OpenJuice
             if (startClip != null)
             {
 #if AUDOTY
-                startClip.Play();
+                AudioHandle startHandle = startClip.Play();
+                startHandle.WaitUntilCompletion().ContinueWith(PlayLoopEffect);
 #else
                 Juicer.Instance.PlaySfx(startClip, PlayLoopEffect);
 #endif
