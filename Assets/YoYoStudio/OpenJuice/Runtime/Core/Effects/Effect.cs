@@ -22,6 +22,7 @@ namespace YoYoStudio.OpenJuice
         
 #if AUDOTY
         private AudioHandle loopHandle;
+        private AudioHandle startHandle;
 #else
         private AudioSource loopSource;
 #endif
@@ -32,12 +33,19 @@ namespace YoYoStudio.OpenJuice
             if (startClip != null)
             {
 #if AUDOTY
-                AudioHandle startHandle = startClip.Play();
-                startHandle.WaitUntilCompletion().ContinueWith(PlayLoopEffect);
+                startHandle = startClip.Play();
 #else
                 Juicer.Instance.PlaySfx(startClip, PlayLoopEffect);
 #endif
             }
+
+
+#if AUDOTY
+            PlayLoopEffect();
+#else
+            if (startClip == null)
+                PlayLoopEffect();
+#endif
             
             effectStarted = true;
             if (duration > 0)
@@ -57,7 +65,7 @@ namespace YoYoStudio.OpenJuice
             if (loopClip != null)
             {
 #if AUDOTY
-                loopHandle = loopClip.Play();
+                loopHandle = loopClip.Play(delay: startHandle.ClipLength);
 #else
                 loopSource = Juicer.Instance.PlaySfx(loopClip, true);
 #endif
@@ -86,6 +94,8 @@ namespace YoYoStudio.OpenJuice
             if (effectStarted)
             {
 #if AUDOTY
+                if (startHandle.IsPlaying())
+                    startHandle.Stop();
                 loopHandle.Stop();
 #else
                 if (loopSource != null) 

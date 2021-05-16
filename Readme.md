@@ -169,7 +169,7 @@ More things to do:
     - Stretch in move direction.
     - Rotate in move direction.
     - Trail or particle while moving
-- Hitted things:
+- Hit things:
     - Shake or scale some things
     - Wobble
     - Change color
@@ -188,4 +188,4 @@ More things to do:
 - Chromatic Abberation
 - Color grading
 
-External Links: [Juice it or loose it](https://www.youtube.com/watch?v=Fy0aCDmgnxg)
+External Links: [Juice it or lose it](https://www.youtube.com/watch?v=Fy0aCDmgnxg)
