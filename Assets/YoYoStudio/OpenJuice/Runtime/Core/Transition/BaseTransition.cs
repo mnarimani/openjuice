@@ -1,5 +1,6 @@
 // Copyright (c) 2020 Omid Saadat (@omid3098)
 
+using System;
 using DG.Tweening;
 using UnityEngine;
 #if UNITASK_DOTWEEN_SUPPORT
@@ -100,17 +101,30 @@ namespace YoYoStudio.OpenJuice
             rewindTween.Play();
         }
 
-#if UNITASK_DOTWEEN_SUPPORT
         public UniTask PlayAsync()
         {
             Play();
+#if UNITASK_DOTWEEN_SUPPORT
             return tween.AwaitForComplete();
+#else
+            return ThrowUniTaskDoTweenNeeded();
+#endif
         }
 
         public UniTask PlayReverseAsync()
         {
             PlayReverse();
+#if UNITASK_DOTWEEN_SUPPORT
             return rewindTween.AwaitForComplete();
+#else
+            return ThrowUniTaskDoTweenNeeded();
+#endif
+        }
+
+#if !UNITASK_DOTWEEN_SUPPORT
+        private static UniTask ThrowUniTaskDoTweenNeeded()
+        {
+            return UniTask.FromException(new NotSupportedException("You need to have UniTask for DoTween enabled if you want to await for completion. Add UNITASK_DOTWEEN_SUPPORT to Scripting Define Symbols in Player Settings"));
         }
 #endif
 
