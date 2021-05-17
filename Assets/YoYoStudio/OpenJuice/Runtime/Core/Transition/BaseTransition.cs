@@ -141,7 +141,7 @@ namespace YoYoStudio.OpenJuice
 #if !UNITASK_DOTWEEN_SUPPORT
         private static UniTask ThrowUniTaskDoTweenNeeded()
         {
-            return UniTask.FromException(new NotSupportedException("You need to have UniTask for DoTween enabled if you want to await for completion. Add UNITASK_DOTWEEN_SUPPORT to Scripting Define Symbols in Player Settings"));
+            return UniTask.FromException(new NotSupportedException("You need to have UniTask for DoTween enabled. Add UNITASK_DOTWEEN_SUPPORT to Scripting Define Symbols in Player Settings"));
         }
 #endif
 

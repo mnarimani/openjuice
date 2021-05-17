@@ -21,12 +21,36 @@ namespace YoYoStudio.OpenJuice
 
         protected override void MakeTweens()
         {
-            tween = transform.DOLocalRotate(TargetRotation, Duration).SetEase(EaseType).SetLoops(Loop, LoopType).SetDelay(Delay).SetAutoKill(false);
-            if (TransitionType == TransitionType.From)
-                ((Tweener) tween).From(Relative);
-            else
-                tween.SetRelative(Relative);
-            tween.Pause();
+            Quaternion original = transform.localRotation;
+            
+            {
+                tween = transform.DOLocalRotate(TargetRotation, Duration)
+                    .SetEase(EaseType)
+                    .SetLoops(Loop, LoopType)
+                    .SetDelay(Delay)
+                    .SetAutoKill(false);
+                
+                if (TransitionType == TransitionType.From)
+                    ((Tweener) tween).From(Relative);
+                else
+                    tween.SetRelative(Relative);
+                
+                tween.Pause();
+            }
+
+            {
+                rewindTween = transform.DOLocalRotateQuaternion(original, RewindDuration)
+                    .SetEase(EaseType)
+                    .SetLoops(Loop, LoopType)
+                    .SetDelay(RewindDelay)
+                    .SetAutoKill(false);
+
+                if (TransitionType == TransitionType.From)
+                    ((Tweener) tween).From(Relative);
+                else
+                    tween.SetRelative(Relative);
+                rewindTween.Pause();
+            }
         }
     }
 }

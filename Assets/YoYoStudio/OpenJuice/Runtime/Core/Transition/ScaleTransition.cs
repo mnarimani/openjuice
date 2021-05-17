@@ -21,14 +21,37 @@ namespace YoYoStudio.OpenJuice
 
         protected override void MakeTweens()
         {
-            tween = transform.DOScale(TargetScale, Duration).SetEase(EaseType).SetLoops(Loop, LoopType).SetDelay(Delay).SetAutoKill(false);
+            Vector3 originalScale = transform.localScale;
 
-            if (TransitionType == TransitionType.From)
-                ((Tweener) tween).From(Relative);
-            else
-                tween.SetRelative(Relative);
+            {
+                tween = transform.DOScale(TargetScale, Duration)
+                    .SetEase(EaseType)
+                    .SetLoops(Loop, LoopType)
+                    .SetDelay(Delay)
+                    .SetAutoKill(false);
 
-            tween.Pause();
+                if (TransitionType == TransitionType.From)
+                    ((Tweener) tween).From(Relative);
+                else
+                    tween.SetRelative(Relative);
+
+                tween.Pause();
+            }
+
+            {
+                rewindTween = transform.DOScale(originalScale, RewindDuration)
+                    .SetEase(EaseType)
+                    .SetLoops(Loop, LoopType)
+                    .SetDelay(RewindDelay)
+                    .SetAutoKill(false);
+
+                if (TransitionType == TransitionType.From)
+                    ((Tweener) rewindTween).From(Relative);
+                else
+                    rewindTween.SetRelative(Relative);
+
+                rewindTween.Pause();
+            }
         }
     }
 }

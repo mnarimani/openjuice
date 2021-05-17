@@ -23,7 +23,7 @@ namespace YoYoStudio.OpenJuice
             Vector3 originalPosition = LocalSpace ? transform.localPosition : transform.position;
 
             {
-                var forward = LocalSpace
+                Tweener forward = LocalSpace
                     ? transform.DOLocalMove(targetPosition, Duration)
                     : transform.DOMove(targetPosition, Duration);
                 forward.SetEase(EaseType).SetLoops(Loop, LoopType).SetDelay(Delay).SetAutoKill(false);
@@ -40,7 +40,7 @@ namespace YoYoStudio.OpenJuice
 
             {
                 Vector3 rewindPosition = Relative ? targetPosition * -1 : originalPosition;
-                var backward = LocalSpace ? transform.DOLocalMove(rewindPosition, RewindDuration) : transform.DOMove(rewindPosition, RewindDuration);
+                Tweener backward = LocalSpace ? transform.DOLocalMove(rewindPosition, RewindDuration) : transform.DOMove(rewindPosition, RewindDuration);
                 backward.SetEase(EaseType).SetLoops(Loop, LoopType).SetDelay(RewindDelay).SetAutoKill(false);
                 if (TransitionType == TransitionType.From)
                     backward.From(Relative);
