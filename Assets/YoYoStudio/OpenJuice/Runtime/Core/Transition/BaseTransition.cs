@@ -89,10 +89,17 @@ namespace YoYoStudio.OpenJuice
             }
 
             MakeTweens();
+            
             tween.Play();
 
             if (ct != null)
+            {
+#if UNITASK_DOTWEEN_SUPPORT
                 tween.WithCancellation(ct.Value);
+#else
+                throw UniTaskDoTweenNeededException();          
+#endif
+            }
         }
         
         public void PlayReverse(CancellationToken? ct)
@@ -115,7 +122,13 @@ namespace YoYoStudio.OpenJuice
             rewindTween.Play();
             
             if (ct != null)
+            {
+#if UNITASK_DOTWEEN_SUPPORT
                 rewindTween.WithCancellation(ct.Value);
+#else
+                throw UniTaskDoTweenNeededException();          
+#endif
+            }
         }
 
         public UniTask PlayAsync(CancellationToken? ct = null)
@@ -124,7 +137,7 @@ namespace YoYoStudio.OpenJuice
 #if UNITASK_DOTWEEN_SUPPORT
             return tween.AwaitForComplete();
 #else
-            return ThrowUniTaskDoTweenNeeded();
+            return UniTaskDoTweenNeededAsync();
 #endif
         }
 
@@ -134,14 +147,19 @@ namespace YoYoStudio.OpenJuice
 #if UNITASK_DOTWEEN_SUPPORT
             return rewindTween.AwaitForComplete();
 #else
-            return ThrowUniTaskDoTweenNeeded();
+            return UniTaskDoTweenNeededAsync();
 #endif
         }
 
 #if !UNITASK_DOTWEEN_SUPPORT
-        private static UniTask ThrowUniTaskDoTweenNeeded()
+        private static UniTask UniTaskDoTweenNeededAsync()
         {
-            return UniTask.FromException(new NotSupportedException("You need to have UniTask for DoTween enabled. Add UNITASK_DOTWEEN_SUPPORT to Scripting Define Symbols in Player Settings"));
+            return UniTask.FromException(UniTaskDoTweenNeededException());
+        }
+
+        private static Exception UniTaskDoTweenNeededException()
+        {
+            return new NotSupportedException("You need to have UniTask for DoTween enabled. Add UNITASK_DOTWEEN_SUPPORT to Scripting Define Symbols in Player Settings");
         }
 #endif
 
