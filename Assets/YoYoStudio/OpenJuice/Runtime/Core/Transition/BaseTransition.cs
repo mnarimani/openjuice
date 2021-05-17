@@ -1,6 +1,7 @@
 // Copyright (c) 2020 Omid Saadat (@omid3098)
 
 using System;
+using System.Threading;
 using DG.Tweening;
 using UnityEngine;
 #if UNITASK_DOTWEEN_SUPPORT
@@ -59,6 +60,19 @@ namespace YoYoStudio.OpenJuice
 #endif
         public void Play()
         {
+            Play(gameObject.GetCancellationTokenOnDestroy());
+        }
+
+#if ODIN_INSPECTOR || NAUGHTY_ATTRIBUTES
+        [Button("Play Reverse")]
+#endif
+        private void PlayReverse()
+        {
+            PlayReverse(gameObject.GetCancellationTokenOnDestroy());
+        }
+        
+        public void Play(CancellationToken? ct)
+        {
             if (rewindTween != null && rewindTween.IsPlaying())
                 rewindTween.Pause();
 
@@ -76,12 +90,12 @@ namespace YoYoStudio.OpenJuice
 
             MakeTweens();
             tween.Play();
-        }
 
-#if ODIN_INSPECTOR || NAUGHTY_ATTRIBUTES
-        [Button("Play Reverse")]
-#endif
-        public void PlayReverse()
+            if (ct != null)
+                tween.WithCancellation(ct.Value);
+        }
+        
+        public void PlayReverse(CancellationToken? ct)
         {
             if (tween != null && tween.IsPlaying())
                 tween.Pause();
@@ -99,11 +113,14 @@ namespace YoYoStudio.OpenJuice
             
             MakeTweens();
             rewindTween.Play();
+            
+            if (ct != null)
+                rewindTween.WithCancellation(ct.Value);
         }
 
-        public UniTask PlayAsync()
+        public UniTask PlayAsync(CancellationToken? ct = null)
         {
-            Play();
+            Play(ct);
 #if UNITASK_DOTWEEN_SUPPORT
             return tween.AwaitForComplete();
 #else
@@ -111,9 +128,9 @@ namespace YoYoStudio.OpenJuice
 #endif
         }
 
-        public UniTask PlayReverseAsync()
+        public UniTask PlayReverseAsync(CancellationToken? ct = null)
         {
-            PlayReverse();
+            PlayReverse(ct);
 #if UNITASK_DOTWEEN_SUPPORT
             return rewindTween.AwaitForComplete();
 #else
