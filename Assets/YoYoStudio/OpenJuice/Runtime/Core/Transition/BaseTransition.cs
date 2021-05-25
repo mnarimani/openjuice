@@ -55,7 +55,11 @@ namespace YoYoStudio.OpenJuice
 
         private void OnDestroy()
         {
-            tween.Kill();
+            if (tween != null && tween.IsActive())
+                tween.Kill();
+            
+            if (rewindTween != null && rewindTween.IsActive())
+                rewindTween.Kill();
         }
 
 #if ODIN_INSPECTOR || NAUGHTY_ATTRIBUTES
@@ -138,7 +142,7 @@ namespace YoYoStudio.OpenJuice
         {
             Play(ct);
 #if UNITASK_DOTWEEN_SUPPORT
-            return tween.ToUniTask();
+            return tween.AwaitForComplete();
 #else
             return UniTaskDoTweenNeededAsync();
 #endif
@@ -148,7 +152,7 @@ namespace YoYoStudio.OpenJuice
         {
             PlayReverse(ct);
 #if UNITASK_DOTWEEN_SUPPORT
-            return rewindTween.ToUniTask();
+            return rewindTween.AwaitForComplete();
 #else
             return UniTaskDoTweenNeededAsync();
 #endif
