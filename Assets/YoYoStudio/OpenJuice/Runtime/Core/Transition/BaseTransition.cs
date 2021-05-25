@@ -1,12 +1,15 @@
 // Copyright (c) 2020 Omid Saadat (@omid3098)
 
-using System;
 using System.Threading;
 using DG.Tweening;
 using UnityEngine;
-#if UNITASK_DOTWEEN_SUPPORT
 using Cysharp.Threading.Tasks;
+
+#if !UNITASK_DOTWEEN_SUPPORT
+using System;
+
 #endif
+
 #if ODIN_INSPECTOR
 using Sirenix.OdinInspector;
 
@@ -73,10 +76,10 @@ namespace YoYoStudio.OpenJuice
         
         public void Play(CancellationToken? ct)
         {
-            if (rewindTween != null && rewindTween.IsPlaying())
+            if (rewindTween != null && rewindTween.IsActive() && rewindTween.IsPlaying())
                 rewindTween.Pause();
 
-            if (tween != null)
+            if (tween != null && tween.IsActive())
             {
                 if (tween.IsPlaying())
                     return;
@@ -104,10 +107,10 @@ namespace YoYoStudio.OpenJuice
         
         public void PlayReverse(CancellationToken? ct)
         {
-            if (tween != null && tween.IsPlaying())
+            if (tween != null && tween.IsActive() && tween.IsPlaying())
                 tween.Pause();
             
-            if (rewindTween != null)
+            if (rewindTween != null && rewindTween.IsActive())
             {
                 if (rewindTween.IsPlaying())
                     return;
@@ -135,7 +138,7 @@ namespace YoYoStudio.OpenJuice
         {
             Play(ct);
 #if UNITASK_DOTWEEN_SUPPORT
-            return tween.AwaitForComplete();
+            return tween.ToUniTask();
 #else
             return UniTaskDoTweenNeededAsync();
 #endif
@@ -145,7 +148,7 @@ namespace YoYoStudio.OpenJuice
         {
             PlayReverse(ct);
 #if UNITASK_DOTWEEN_SUPPORT
-            return rewindTween.AwaitForComplete();
+            return rewindTween.ToUniTask();
 #else
             return UniTaskDoTweenNeededAsync();
 #endif
